@@ -1,7 +1,9 @@
 swagger: '2.0'
 info:
-  title: API Registry Service
+  title: API Datastore
   version: "0.1"
+  description: List of APIs usable by other developers \
+    Registration put apis/{api_id}
 consumes:
   - application/json
 produces:
@@ -11,13 +13,14 @@ security:
   # (only active if the TOKENINFO_URL environment variable is set)
   - oauth2: [uid]
 paths:
-  /APIs:
+  /apis:
     get:
       tags: [APIs]
       operationId: app.get_apis
-      summary: Get all APIs
+      summary: Get all apis
       parameters:
         - name: api_type
+          description: "Query by the type of the API. Types allowed: Public,Private."
           in: query
           type: string
           pattern: "^[a-zA-Z0-9]*$"
@@ -33,11 +36,11 @@ paths:
             type: array
             items:
               $ref: '#/definitions/API'
-  /APIs/{api_id}:
+  /api/{api_id}:
     get:
       tags: [APIs]
       operationId: app.get_api
-      summary: Get a single API
+      summary: Get a single api
       parameters:
         - $ref: '#/parameters/api_id'
       responses:
@@ -89,44 +92,52 @@ definitions:
     type: object
     required:
       - name
+      - id
       - api_type
-      - base_url
-      - doc_url
     properties:
       id:
         type: string
-        description: Unique identifier
-        example: "123"
+        description: "Unique identifier for the API. Be sure to include a unique prefix to keep your APIs separate from others."
+        example: "Department.ID1"
         readOnly: true
       name:
         type: string
-        description: API's name
-        example: "API Registry"
+        description: "The name of the API"
+        example: "API Datastore"
         minLength: 1
         maxLength: 100
       api_type:
         type: string
-        description: Kind of API
-        example: "public"
-        minLength: 1
-      doc_url:
-        type: string
-        description: URL for documentation
-        example: "public"
-        minLength: 1
+        description: "Type of API. For example: public, private, underDevelopment"
+        example: "private"
+        minLength: 1 
       base_url:
-        type: string
-        description: Base of URL for Service
-        example: "public"
+        description: "Base URL of Service endpoints"
+        example: "https://appspot.com:3001/api/v1"
         minLength: 1
+      apireference_url:
+        description: "URL to API reference documentation"
+        example: "https://appspot.com/api/v1/ui/"
+        minLength: 1
+      apiquickstart_url:
+        description: "URL to API quick start documentation"
+        example: "https://appspot.com/api/v1/qs/"
+      apiexamples_url:
+        description: "URL to examples of usage"
+        example: "https://appspot.com/api/v1/examples/"  
       created:
         type: string
         format: date-time
         description: Creation time
         example: "2015-07-07T15:49:51.230+02:00"
         readOnly: true
-
-
+      updated:
+        type: string
+        format: date-time
+        description: Last update time
+        example: "2015-07-07T15:49:51.230+02:00"
+        readOnly: false
+      
 securityDefinitions:
   oauth2:
     type: oauth2
