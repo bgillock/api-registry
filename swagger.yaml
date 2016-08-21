@@ -1,9 +1,33 @@
 swagger: '2.0'
 info:
-  title: API Datastore
+  title: API Registry
   version: "0.1"
-  description: List of APIs usable by other developers \
-    Registration put apis/{api_id}
+  description: |
+    Use this [RESTful](http://en.wikipedia.org/wiki/Representational_state_transfer) 
+    API to register your APIs with the [API Portal](http://api.software.slb.com).
+
+    ## Specify a Unique ID
+    The 'api_id' is how you will create and access your API registration. The 'api_id'
+    is your own ID so be sure to include a prefix for the id so your id doesn't conflict with 
+    other services. You should include version numbers in the api_id (only you see) if your want 
+    support multiple versions of the API. Include the version number in the name so the user's of the
+    API can find the appropriate documentation.
+
+    ## When to register
+    Use the 'PUT api/{api_id}' to register your API. The best time to register your
+    API is during deployment of your service. 
+
+    '''sh 
+    curl -X PUT --header 'Content-Type: application/json' --header 'Accept: text/html' -d '{
+      "api_type": "private",
+      "apiexamples_url": "https://appspot.com/api/v1/examples/",
+      "apiquickstart_url": "https://appspot.com/api/v1/qs/",
+      "apireference_url": "https://appspot.com/api/v1/ui/",
+      "base_url": "https://appspot.com:3001/api/v1",
+      "name": "API Name",
+    }' 'https://slb-extensibility-demo.appspot.com/api/OwnerAPIName'
+    '''
+    
 consumes:
   - application/json
 produces:
