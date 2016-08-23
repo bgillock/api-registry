@@ -7,17 +7,18 @@ info:
     API to register your APIs with the [API Portal](http://api.software.slb.com).
 
     ## Specify a Unique ID
-    The 'api_id' is how you will create and access your API registration. The 'api_id'
+    The `api_id` is how you will create and access your API registration. The `api_id`
     is your own ID so be sure to include a prefix for the id so your id doesn't conflict with 
-    other services. You should include version numbers in the api_id (only you see) if your want 
-    support multiple versions of the API. Include the version number in the name so the user's of the
+    other services. You should include version number in the `api_id` if your want 
+    support multiple versions of the API. Also include the version number in the name so the user's of the
     API can find the appropriate documentation.
 
     ## When to register
     Use the 'PUT api/{api_id}' to register your API. The best time to register your
-    API is during deployment of your service. 
+    API is during deployment of your service. Here is an example of a curl command which can be added
+    to your build/deploy script:
 
-    '''sh 
+    ```sh 
     curl -X PUT --header 'Content-Type: application/json' --header 'Accept: text/html' -d '{
       "api_type": "private",
       "apiexamples_url": "https://appspot.com/api/v1/examples/",
@@ -25,8 +26,15 @@ info:
       "apireference_url": "https://appspot.com/api/v1/ui/",
       "base_url": "https://appspot.com:3001/api/v1",
       "name": "API Name",
-    }' 'https://slb-extensibility-demo.appspot.com/api/OwnerAPIName'
-    '''
+    }' 'https://slb-extensibility-demo.appspot.com/api/DeveloperABCID1'
+    ```
+    ## When to delete
+    If your API is no longer supported, you should delete the API from the registry with the delete method. Here is an example of a
+    curl command to delete an API.
+    
+    ```sh
+    curl -X DELETE --header 'Accept: text/html' 'https://slb-extensibility-demo.appspot.com/api/DeveloperABCID1'
+    ```
     
 consumes:
   - application/json
@@ -39,7 +47,7 @@ security:
 paths:
   /apis:
     get:
-      tags: [APIs]
+      tags: [API]
       operationId: app.get_apis
       summary: Get all apis
       parameters:
@@ -62,7 +70,7 @@ paths:
               $ref: '#/definitions/API'
   /api/{api_id}:
     get:
-      tags: [APIs]
+      tags: [API]
       operationId: app.get_api
       summary: Get a single api
       parameters:
@@ -75,7 +83,7 @@ paths:
         404:
           description: API does not exist
     put:
-      tags: [APIs]
+      tags: [API]
       operationId: app.put_api
       summary: Create or update a API
       parameters:
@@ -90,7 +98,7 @@ paths:
         201:
           description: New API created
     delete:
-      tags: [APIs]
+      tags: [API]
       operationId: app.delete_api
       summary: Remove a API
       parameters:
@@ -122,7 +130,7 @@ definitions:
       id:
         type: string
         description: "Unique identifier for the API. Be sure to include a unique prefix to keep your APIs separate from others."
-        example: "Department.ID1"
+        example: "DeveloperABCID1"
         readOnly: true
       name:
         type: string
