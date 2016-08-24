@@ -37,26 +37,27 @@ Running Locally
 
 You can run the Python application directly on your local operating system:
 
-.. code-block:: bash
+```
     $ git clone http://www.github.com/bgillock/api-registry
     $ cd api-registry
     $ sudo pip3 install -r requirements.txt
     $ ./app.py # start the HTTP server
     $ http://localhost:8080/ui/
     $ Go to PUT api/{api_id} to try it out. This will register an API.
+```
 
 Deploying to App Engine
 ================
 
 To deploy to App Engine you will need to install Google Cloud SDK.
 
-.. code-block:: bash
+```
     $ git clone http://www.github.com/bgillock/api-registry
     $ cd api-registry
     $ gcloud init <- Select your account name and project
     $ gcloud auth login
     $ gcloud app deploy
-
+```
     
 
 
