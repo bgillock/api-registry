@@ -1,6 +1,4 @@
-==============================
-API Registry for App Engine
-==============================
+# API Registry for App Engine
 
 This app engine implements a REST service using the `Connexion`_ Python library for 
 registering APIs with the API portal.
@@ -8,20 +6,17 @@ registering APIs with the API portal.
 Connexion is a framework on top of Flask_ to automagically handle your REST API requests
 based on `Swagger 2.0 Specification`_ files in YAML.
 
-Features
-========
+## Features
 
 * bundled Swagger UI (served on `/ui/`_ path)
 * API registry service on /apis, /api/{api_id}
 
-Prerequisites
-=============
+## Prerequisites
 
-* Python 3
-* git
+* `Python 3`
+* `git`
 
-Files
-=====
+## Files
 
 The example application only needs very few files:
 
@@ -29,11 +24,8 @@ The example application only needs very few files:
 * ``app.py``: implementation of the pet shop operations with in-memory storage
 * ``requirements.txt``: list of required Python libraries
 * ``Dockerfile``: to build the example as a runnable Docker image
-* ``test.sh``: shell script to execute example HTTP requests against the API Registry API
 
-
-Running Locally
-===============
+## Running Locally
 
 You can run the Python application directly on your local operating system:
 
@@ -42,12 +34,12 @@ You can run the Python application directly on your local operating system:
     $ cd api-registry
     $ sudo pip3 install -r requirements.txt
     $ ./app.py # start the HTTP server
-    $ http://localhost:8080/ui/
-    $ Go to PUT api/{api_id} to try it out. This will register an API.
 ```
 
-Deploying to App Engine
-================
+Visit http://localhost:8080/ui/ to see the API documentation.
+Go to PUT api/{api_id} and `try it out`. This will register an API.
+
+## Deploying to App Engine
 
 To deploy to App Engine you will need to install Google Cloud SDK.
 
