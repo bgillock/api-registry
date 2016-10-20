@@ -1,179 +1,224 @@
 swagger: '2.0'
 info:
-  title: API Registry
-  version: "0.1"
-  description: |
-    Use this [RESTful](http://en.wikipedia.org/wiki/Representational_state_transfer) 
-    API to register your APIs with the [API Portal](http://api.software.slb.com).
+  description: >
+    Use this
+    [RESTful](http://en.wikipedia.org/wiki/Representational_state_transfer) 
+
+    API to register your APIs with the [API
+    Portal](http://api.software.slb.com).
+
 
     ## Specify a Unique ID
-    The `api_id` is how you will create and access your API registration. The `api_id`
-    is your own ID so be sure to include a prefix for the id so your id doesn't conflict with 
-    other services. You should include version number in the `api_id` if your want 
-    support multiple versions of the API. Also include the version number in the name so the user's of the
+
+    The `api_id` is how you will create and access your API registration. The
+    `api_id`
+
+    is your own ID so be sure to include a prefix for the id so your id doesn't
+    conflict with 
+
+    other services. You should include version number in the `api_id` if your
+    want 
+
+    support multiple versions of the API. Also include the version number in the
+    name so the user's of the
+
     API can find the appropriate documentation.
 
+
     ## When to register
-    Use the 'PUT api/{api_id}' to register your API. The best time to register your
-    API is during deployment of your service. Here is an example of a curl command which can be added
+
+    Use the 'PUT api/{api_id}' to register your API. The best time to register
+    your
+
+    API is during deployment of your service. Here is an example of a curl
+    command which can be added
+
     to your build/deploy script:
 
+
     ```sh 
-    curl -X PUT --header 'Content-Type: application/json' --header 'Accept: text/html' -d '{
+
+    curl -X PUT --header 'Content-Type: application/json' --header 'Accept:
+    text/html' -d '{
       "api_type": "private",
-      "apiexamples_url": "https://appspot.com/api/v1/examples/",
-      "apiquickstart_url": "https://appspot.com/api/v1/qs/",
-      "apireference_url": "https://appspot.com/api/v1/ui/",
-      "base_url": "https://appspot.com:3001/api/v1",
       "name": "API Name",
+      "resources": {
+        "apiexamples_url": "https://appspot.com/api/v1/examples/",
+        "apiquickstart_url": "https://appspot.com/api/v1/qs/",
+        "apireference_url": "https://appspot.com/api/v1/ui/",
+        "base_url": "https://appspot.com:3001/api/v1" 
+      }
     }' 'https://slb-extensibility-demo.appspot.com/api/DeveloperABCID1'
+
     ```
+
     ## When to delete
-    If your API is no longer supported, you should delete the API from the registry with the delete method. Here is an example of a
+
+    If your API is no longer supported, you should delete the API from the
+    registry with the delete method. Here is an example of a
+
     curl command to delete an API.
-    
+
+
     ```sh
-    curl -X DELETE --header 'Accept: text/html' 'https://slb-extensibility-demo.appspot.com/api/DeveloperABCID1'
+
+    curl -X DELETE --header 'Accept: text/html'
+    'https://slb-extensibility-demo.appspot.com/api/DeveloperABCID1'
+
     ```
-    
+  version: '0.1'
+  title: API Registry
 consumes:
   - application/json
 produces:
   - application/json
-security:
-  # enable OAuth protection for all REST endpoints
-  # (only active if the TOKENINFO_URL environment variable is set)
-  - oauth2: [uid]
 paths:
+  '/api/{api_id}':
+    get:
+      tags:
+        - API
+      summary: Get a single api
+      operationId: app.get_api
+      parameters:
+        - name: api_id
+          in: path
+          description: API's Unique identifier
+          required: true
+          type: string
+          pattern: '^[a-zA-Z0-9-]+$'
+      responses:
+        '200':
+          description: Return API
+          schema:
+            $ref: '#/definitions/API'
+        '404':
+          description: API does not exist
+      x-swagger-router-controller: API
+    put:
+      tags:
+        - API
+      summary: Create or update a API
+      operationId: app.put_api
+      parameters:
+        - name: api_id
+          in: path
+          description: API's Unique identifier
+          required: true
+          type: string
+          pattern: '^[a-zA-Z0-9-]+$'
+        - in: body
+          name: api
+          required: false
+          schema:
+            $ref: '#/definitions/API'
+      responses:
+        '200':
+          description: API updated
+        '201':
+          description: New API created
+      x-swagger-router-controller: API
+    delete:
+      tags:
+        - API
+      summary: Remove a API
+      operationId: app.delete_api
+      parameters:
+        - name: api_id
+          in: path
+          description: API's Unique identifier
+          required: true
+          type: string
+          pattern: '^[a-zA-Z0-9-]+$'
+      responses:
+        '204':
+          description: API was deleted
+        '404':
+          description: API does not exist
+      x-swagger-router-controller: API
   /apis:
     get:
-      tags: [API]
-      operationId: app.get_apis
+      tags:
+        - API
       summary: Get all apis
+      operationId: app.get_apis
       parameters:
         - name: api_type
-          description: "Query by the type of the API. Types allowed: Public,Private."
           in: query
+          description: 'Query by the type of the API. Types allowed: Public,Private.'
+          required: false
           type: string
-          pattern: "^[a-zA-Z0-9]*$"
+          pattern: '^[a-zA-Z0-9]*$'
         - name: limit
           in: query
+          required: false
           type: integer
-          minimum: 0
           default: 100
+          minimum: 0
       responses:
-        200:
+        '200':
           description: Return APIs
           schema:
             type: array
             items:
               $ref: '#/definitions/API'
-  /api/{api_id}:
-    get:
-      tags: [API]
-      operationId: app.get_api
-      summary: Get a single api
-      parameters:
-        - $ref: '#/parameters/api_id'
-      responses:
-        200:
-          description: Return API
-          schema:
-            $ref: '#/definitions/API'
-        404:
-          description: API does not exist
-    put:
-      tags: [API]
-      operationId: app.put_api
-      summary: Create or update a API
-      parameters:
-        - $ref: '#/parameters/api_id'
-        - name: api
-          in: body
-          schema:
-            $ref: '#/definitions/API'
-      responses:
-        200:
-          description: API updated
-        201:
-          description: New API created
-    delete:
-      tags: [API]
-      operationId: app.delete_api
-      summary: Remove a API
-      parameters:
-        - $ref: '#/parameters/api_id'
-      responses:
-        204:
-          description: API was deleted
-        404:
-          description: API does not exist
-
-
-parameters:
-  api_id:
-    name: api_id
-    description: API's Unique identifier
-    in: path
-    type: string
-    required: true
-    pattern: "^[a-zA-Z0-9-]+$"
-
+      x-swagger-router-controller: API
 definitions:
   API:
     type: object
     required:
-      - name
-      - id
       - api_type
+      - id
+      - name
     properties:
       id:
         type: string
-        description: "Unique identifier for the API. Be sure to include a unique prefix to keep your APIs separate from others."
-        example: "DeveloperABCID1"
+        example: DeveloperABCID1
+        description: >-
+          Unique identifier for the API. Be sure to include a unique prefix to
+          keep your APIs separate from others.
         readOnly: true
-      name:
-        type: string
-        description: "The name of the API"
-        example: "API Datastore"
-        minLength: 1
-        maxLength: 100
       api_type:
         type: string
-        description: "Type of API. For example: public, private, underDevelopment"
-        example: "private"
-        minLength: 1 
-      base_url:
-        description: "Base URL of Service endpoints"
-        example: "https://appspot.com:3001/api/v1"
-        minLength: 1
-      apireference_url:
-        description: "URL to API reference documentation"
-        example: "https://appspot.com/api/v1/ui/"
-        minLength: 1
-      apiquickstart_url:
-        description: "URL to API quick start documentation"
-        example: "https://appspot.com/api/v1/qs/"
-      apiexamples_url:
-        description: "URL to examples of usage"
-        example: "https://appspot.com/api/v1/examples/"  
+        example: private
+        description: 'Type of API. For example: public, private, underDevelopment'
+      name:
+        type: string
+        example: myAPI
+        description: The name of the API
+      description:
+        type: string
+        example: Description of myAPI
+        description: Brief description of the API
       created:
         type: string
         format: date-time
+        example: '2015-07-07T15:49:51.230+02:00'
         description: Creation time
-        example: "2015-07-07T15:49:51.230+02:00"
         readOnly: true
       updated:
         type: string
         format: date-time
+        example: '2015-07-07T15:49:51.230+02:00'
         description: Last update time
-        example: "2015-07-07T15:49:51.230+02:00"
-        readOnly: false
-      
-securityDefinitions:
-  oauth2:
-    type: oauth2
-    flow: implicit
-    authorizationUrl: https://example.com/oauth2/dialog
-    scopes:
-      uid: Unique identifier of the user accessing the service.
+        readOnly: true
+      resources:
+        type: object
+        properties: 
+          base_url:
+            type: string
+            example: 'https://myappspot.com/'
+            description: The base url of the API.
+          apiquickstart_url:
+            type: string
+            example: 'https://appspot.com/api/v1/qs/'
+            description: Link to document containing quickstart guides.
+          apireference_url:
+            type: string
+            example: 'https://appspot.com/api/v1/docs/'
+            description: Link to document containing API reference documentation.  
+          tutorials_url:
+            type: string
+            example: 'https://appspot.com/api/v1/tutorials/'
+            description: Link to document containing tutorials.  
+          
+
